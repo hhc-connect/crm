@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
-from database import add_customer, list_customers, delete_customer, update_customer_status, search_customers_by_query, export_customers_to_csv
+from database import add_customer, list_customers, delete_customer, update_customer_status, search_customers, export_customers_to_csv
 from flask import send_file
 
 app = Flask(__name__)
@@ -64,7 +64,7 @@ def list_customers_route():
     customers = list_customers()
     return render_template('list_customers.html', customers=customers)
 
-@app.route('/search_customers_by_query', methods=['GET', 'POST'])
+@app.route('/search_customers', methods=['GET', 'POST'])
 def search_customers_route():
     if request.method == 'POST':
         search_name = request.form.get('search_name')
@@ -73,7 +73,7 @@ def search_customers_route():
         search_address = request.form.get('search_address')
         search_status = request.form.get('search_status')
 
-        results = search_customers_by_query(search_name, search_email, search_phone, search_address, search_status)
+        results = search_customers(search_name, search_email, search_phone, search_address, search_status)
         return render_template('list_customers.html', customers=results)
     return render_template('search_customers.html')
 
