@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kundenliste</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .back-button, .download-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .back-button:hover, .download-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kundenliste</h1>
+    <form method="get" action="/search_customer">
+        <input type="text" name="search" placeholder="Kunden suchen...">
+        <input type="submit" value="Suchen">
+    </form>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>Adresse</th>
+            <th>Notiz</th>
+            <th>Status</th>
+            <th>Aktion</th>
+        </tr>
+        {% for customer in customers %}
+            <tr>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.address }}</td>
+                <td>{{ customer.note }}</td>
+                <td>{{ customer.purchase_status }}</td>
+                <td>
+                    <form method="post" action="/delete_customer/{{ customer.id }}">
+                        <input type="submit" class="delete-btn" value="Löschen">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <a href="/export_customers" class="download-button">Kundenliste herunterladen</a>
+    <a href="/" class="back-button">Zurück zur Startseite</a>
+</body>
+</html>

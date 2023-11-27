@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kundenstatus aktualisieren</title>
+    <style>
+        form {
+            margin: 20px auto;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kundenstatus aktualisieren</h1>
+    <form method="post" action="/update_status">
+        <input type="number" name="customer_id" placeholder="Kunden-ID" required>
+        <select name="new_status">
+            <option value="">Status auswählen...</option>
+            <option value="Rot">Rot</option>
+            <option value="Gelb">Gelb</option>
+            <option value="Grün">Grün</option>
+        </select>
+        <input type="submit" value="Status aktualisieren">
+    </form>
+</body>
+</html>

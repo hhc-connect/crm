@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kundensuche</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        form {
+            margin: 20px auto;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"], .back-button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type="submit"]:hover, .back-button:hover {
+            background-color: #45a049;
+        }
+        .back-button {
+            background-color: #007bff;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kundensuche</h1>
+    <form method="post" action="/search_customers_by_query">
+        <input type="text" name="search_name" placeholder="Name">
+        <input type="email" name="search_email" placeholder="Email">
+        <input type="tel" name="search_phone" placeholder="Telefon">
+        <input type="text" name="search_address" placeholder="Adresse">
+        <select name="search_status">
+            <option value="">Status auswählen...</option>
+            <option value="Rot">Rot</option>
+            <option value="Gelb">Gelb</option>
+            <option value="Grün">Grün</option>
+        </select>
+        <input type="submit" value="Suchen">
+    </form>
+    <a href="/" class="back-button">Zurück zur Startseite</a>
+</body>
+</html>

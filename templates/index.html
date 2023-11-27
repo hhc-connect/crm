@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM-System Startseite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        .logout {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>Willkommen im CRM-System</h1>
+    <nav>
+        <ul>
+            <li><a href="/add_customer">Neuen Kunden hinzufügen</a></li>
+            <li><a href="/customers">Kundenliste anzeigen</a></li>
+            <li><a href="/search_customers_by_query">Kunden suchen</a></li>
+            <li><a href="/update_status">Kundenstatus aktualisieren</a></li>
+        </ul>
+    </nav>
+    <a class="logout" href="/logout">Abmelden</a>
+</body>
+</html>
