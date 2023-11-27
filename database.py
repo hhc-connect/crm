@@ -39,7 +39,7 @@ def list_customers():
     connection.close()
     return customers
 
-def search_customers_by_query(name=None, email=None, phone=None, address=None, status=None):
+def search_customers(name=None, email=None, phone=None, address=None, status=None):
     connection = get_db_connection()
     cursor = connection.cursor()
     query = "SELECT * FROM customers WHERE"
