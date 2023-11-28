@@ -29,8 +29,8 @@ def add_customer(name, email, phone, address, note):
     with connection:
         connection.execute("""
             INSERT INTO customers (name, email, phone, address, note, purchase_status) 
-            VALUES (?, ?, ?, ?, ?, 'Gelb');""", 
-            (name, email, phone, address, note))
+            VALUES (?, ?, ?, ?, ?, 'Gelb');
+        """, (name, email, phone, address, note))
     connection.close()
 
 def list_customers():
@@ -39,7 +39,7 @@ def list_customers():
     connection.close()
     return customers
 
-def search_customers(name=None, email=None, phone=None, address=None, status=None):
+def search_customer(name=None, email=None, phone=None, address=None, status=None):
     connection = get_db_connection()
     cursor = connection.cursor()
     query = "SELECT * FROM customers WHERE"
@@ -62,12 +62,10 @@ def search_customers(name=None, email=None, phone=None, address=None, status=Non
         parameters.append(status)
 
     query = query.rstrip(' AND')
-
     cursor.execute(query, parameters)
     results = cursor.fetchall()
     connection.close()
     return results
-
 
 def delete_customer(customer_id):
     connection = get_db_connection()
@@ -90,10 +88,11 @@ def export_customers_to_csv(filename='customers.csv'):
         writer.writerow(headers)
         for customer in customers:
             writer.writerow([customer['id'], customer['name'], customer['email'], customer['phone'], customer['address'], customer['note'], customer['purchase_status']])
+    return filename
 
-def import_customers_from_csv(filename='customers.csv'):
+def import_customers_from_csv(filename):
     with open(filename, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
-        next(reader)
+        next(reader)  # Skip headers
         for row in reader:
             add_customer(name=row[1], email=row[2], phone=row[3], address=row[4], note=row[5])

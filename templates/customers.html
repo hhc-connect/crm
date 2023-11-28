@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Kundendetails</title>
+    <title>Kundenliste</title>
     <style>
         table {
             width: 100%;
@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <h1>Kundendetails</h1>
+    <h1>Kundenliste</h1>
     <table>
         <tr>
             <th>ID</th>
@@ -45,5 +45,6 @@
         </tr>
         {% endfor %}
     </table>
+    <a href="/export_customers" class="btn btn-primary">Kundenliste herunterladen</a>
 </body>
 </html>

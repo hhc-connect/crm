@@ -1,51 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from werkzeug.utils import secure_filename
+from database import add_customer, list_customers, delete_customer, update_customer_status, export_customers_to_csv, import_customers_from_csv, search_customer
 import os
-from database import add_customer, list_customers, delete_customer, update_customer_status, search_customers, export_customers_to_csv
-from flask import send_file
 
 app = Flask(__name__)
+app.secret_key = '73583835'
 
-users = {'HHC': {'password': 'Kirche123#1'}}
-
-app.secret_key = os.environ.get('SECRET_KEY', 'Ein_default_geheimer_Schlüssel')
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-class User(UserMixin):
-    pass
-
-@login_manager.user_loader
-def load_user(user_id):
-    user = User()
-    user.id = user_id
-    return user
+@app.route('/')
+def index():
+    if 'logged_in' in session:
+        return render_template('index.html')
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username in users and users[username]['password'] == password:
-            user_obj = User()
-            user_obj.id = username
-            login_user(user_obj)
+        if username == 'HHC' and password == 'Kirche123#1':
+            session['logged_in'] = True
             return redirect(url_for('index'))
-        return 'Ungültige Anmeldedaten'
+        else:
+            flash('Login fehlgeschlagen!', 'danger')
     return render_template('login.html')
 
 @app.route('/logout')
-@login_required
 def logout():
-    logout_user()
+    session.pop('logged_in', None)
     return redirect(url_for('login'))
-
-@app.route('/')
-@login_required
-def index():
-    return render_template('index.html')
 
 @app.route('/add_customer', methods=['GET', 'POST'])
 def add_customer_route():
@@ -56,48 +38,65 @@ def add_customer_route():
         address = request.form['address']
         note = request.form['note']
         add_customer(name, email, phone, address, note)
-        return redirect(url_for('list_customers_route'))
+        flash('Kunde erfolgreich hinzugefügt.', 'success')
+        return redirect(url_for('customers_route'))
     return render_template('add_customer.html')
 
 @app.route('/customers')
-def list_customers_route():
+def customers_route():
     customers = list_customers()
-    return render_template('list_customers.html', customers=customers)
+    return render_template('customers.html', customers=customers)
 
-@app.route('/search_customers', methods=['GET', 'POST'])
-def search_customers_route():
+@app.route('/search_customer', methods=['GET', 'POST'])
+def search_customer_route():
     if request.method == 'POST':
-        search_name = request.form.get('search_name')
-        search_email = request.form.get('search_email')
-        search_phone = request.form.get('search_phone')
-        search_address = request.form.get('search_address')
-        search_status = request.form.get('search_status')
-
-        results = search_customers(search_name, search_email, search_phone, search_address, search_status)
-        return render_template('list_customers.html', customers=results)
-    return render_template('search_customers.html')
-
-
-@app.route('/delete_customer/<int:customer_id>', methods=['POST'])
-def delete_customer_route(customer_id):
-    delete_customer(customer_id)
-    return redirect(url_for('list_customers_route'))
+        name = request.form['search_name']
+        email = request.form['search_email']
+        phone = request.form['search_phone']
+        address = request.form['search_address']
+        status = request.form['search_status']
+        customers = search_customer(name, email, phone, address, status)
+        return render_template('customers.html', customers=customers)
+    return render_template('search_customer.html')
 
 @app.route('/update_status', methods=['GET', 'POST'])
 def update_status_route():
     if request.method == 'POST':
-        customer_id = request.form.get('customer_id')
-        new_status = request.form.get('new_status')
-        if customer_id and new_status:
-            update_customer_status(customer_id, new_status)
-            return redirect(url_for('list_customers_route'))
+        customer_id = request.form['customer_id']
+        new_status = request.form['new_status']
+        update_customer_status(customer_id, new_status)
+        flash('Kundenstatus aktualisiert.', 'info')
+        return redirect(url_for('customers_route'))
     return render_template('update_status.html')
+
+@app.route('/delete_customer/<int:customer_id>', methods=['POST'])
+def delete_customer_route(customer_id):
+    delete_customer(customer_id)
+    flash('Kunde gelöscht.', 'warning')
+    return redirect(url_for('customers_route'))
 
 @app.route('/export_customers')
 def export_customers_route():
-    export_customers_to_csv('customers.csv')  # Funktion, die die CSV-Datei erstellt
+    export_customers_to_csv()  # Exportiert die Kundenliste in eine CSV-Datei
     return send_file('customers.csv', as_attachment=True, attachment_filename='customers.csv')
 
+@app.route('/import_customers', methods=['GET', 'POST'])
+def import_customers_route():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('Keine Datei ausgewählt', 'danger')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('Keine Datei ausgewählt', 'danger')
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join('path/to/save', filename))
+            import_customers_from_csv(filename)
+            flash('Kunden erfolgreich importiert', 'success')
+            return redirect(url_for('customers_route'))
+    return render_template('import_customers.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True)
